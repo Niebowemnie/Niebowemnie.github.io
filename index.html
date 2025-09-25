@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Moje obrazy — portfolio</title>
+  <meta name="description" content="Galeria obrazów. Kontakt: mailto" />
+  <style>
+    /* --- Prosty, czytelny styl: grid galerii, modal, sekcja kontaktowa --- */
+    :root{--bg:#fbfbfb;--card:#fff;--muted:#666}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:#111}
+    header{background:#111;color:#fff;padding:28px 18px;text-align:center}
+    header h1{margin:0;font-size:clamp(20px,4vw,34px)}
+    .container{max-width:1100px;margin:28px auto;padding:0 18px}
+    .intro{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+    .intro p{flex:1;min-width:220px}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:18px}
+
+    figure.art{background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);margin:0}
+    figure.art img{width:100%;height:220px;object-fit:cover;display:block}
+    figcaption{padding:12px}
+    .title{font-weight:600;margin:0 0 6px}
+    .desc{color:var(--muted);font-size:14px;margin:0 0 8px}
+    .price{font-weight:700}
+    .meta{display:flex;justify-content:space-between;align-items:center}
+    .btn{display:inline-block;padding:8px 12px;border-radius:6px;background:#111;color:#fff;text-decoration:none;font-size:14px}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:60}
+    .modal.open{display:flex}
+    .modal .card{max-width:960px;width:92%;background:#fff;border-radius:8px;overflow:hidden}
+    .modal .card img{width:100%;height:60vh;object-fit:contain;background:#000}
+    .modal .info{padding:16px}
+    .close{position:absolute;right:18px;top:18px;background:#fff;border-radius:999px;padding:6px 10px;cursor:pointer}
+
+    footer{padding:28px 18px;text-align:center;color:var(--muted);font-size:14px}
+
+    /* mobile tweaks */
+    @media (max-width:520px){figure.art img{height:160px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Twoje nazwisko / Nazwa galerii</h1>
+    <div style="font-size:14px;margin-top:6px;opacity:.9">Małe portfolio z możliwością kontaktu — bez sklepu online</div>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <p>Witaj — tu pokażesz swoje obrazy. Każdy element ma tytuł, krótki opis i cenę. Klienci mogą napisać do Ciebie bezpośrednio przez e‑mail (link poniżej) lub przez formularz Google (jeśli chcesz go użyć).</p>
+      <div>
+        <a class="btn" href="#contact">Skontaktuj się</a>
+      </div>
+    </section>
+
+    <section class="gallery" id="gallery">
+      <!-- === PRZYKŁADOWY ELEMENT === -->
+      <!-- Aby dodać obraz: wrzuć plik do folderu /images w repozytorium, a następnie skopiuj cały <figure class="art"> ... </figure> i zaktualizuj src, tytuł, opis, cenę i alt. --></
+      >
+      <figure class="art" data-title="Tytuł obrazu 1" data-desc="Krótki opis obrazu 1">
+        <img src="images/art1.jpg" alt="Tytuł obrazu 1">
+        <figcaption>
+          <div class="title">Tytuł obrazu 1</div>
+          <p class="desc">Krótki opis, rozmiar, technika.</p>
+          <div class="meta"><div class="price">1200 PLN</div><a class="btn" href="#" data-open="0">Zobacz</a></div>
+        </figcaption>
+      </figure>
+
+      <figure class="art" data-title="Tytuł obrazu 2" data-desc="Krótki opis obrazu 2">
+        <img src="images/art2.jpg" alt="Tytuł obrazu 2">
+        <figcaption>
+          <div class="title">Tytuł obrazu 2</div>
+          <p class="desc">Krótki opis, rozmiar, technika.</p>
+          <div class="meta"><div class="price">800 PLN</div><a class="btn" href="#" data-open="1">Zobacz</a></div>
+        </figcaption>
+      </figure>
+
+      <figure class="art" data-title="Tytuł obrazu 3" data-desc="Krótki opis obrazu 3">
+        <img src="images/art3.jpg" alt="Tytuł obrazu 3">
+        <figcaption>
+          <div class="title">Tytuł obrazu 3</div>
+          <p class="desc">Krótki opis, rozmiar, technika.</p>
+          <div class="meta"><div class="price">500 PLN</div><a class="btn" href="#" data-open="2">Zobacz</a></div>
+        </figcaption>
+      </figure>
+
+    </section>
+
+    <!-- Modal do powiększania i opisu obrazu -->
+    <div class="modal" id="modal" role="dialog" aria-hidden="true">
+      <div class="card">
+        <button class="close" id="modalClose">✕</button>
+        <img id="modalImg" src="" alt="">
+        <div class="info">
+          <h3 id="modalTitle"></h3>
+          <p id="modalDesc" style="color:var(--muted)"></p>
+          <p style="margin-top:10px">Cena: <strong id="modalPrice"></strong></p>
+        </div>
+      </div>
+    </div>
+
+    <section id="contact" style="margin-top:28px;padding:18px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
+      <h2>Kontakt</h2>
+      <p>Najprościej: napisz e‑maila.</p>
+      <!-- UZUPEŁNIJ SWÓJ E‑MAIL NIŻEJ (zamień adres example@domain.pl na swój) -->
+      <p><a class="btn" href="mailto:example@domain.pl?subject=Zapytanie%20o%20obraz">Napisz e‑mail</a></p>
+
+      <p style="margin-top:12px">Jeśli chcesz formularz kontaktowy (Google Forms): stwórz formularz w Google Forms, skopiuj link i wklej tutaj lub osadź go w kodzie.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    © <span id="year"></span> Twoje nazwisko — wszystkie prawa zastrzeżone
+  </footer>
+
+  <script>
+    // Aktualizacja roku
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal - prosta obsługa: przycisk "Zobacz" otwiera powiększenie
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPrice = document.getElementById('modalPrice');
+    const closeBtn = document.getElementById('modalClose');
+
+    document.querySelectorAll('.gallery .art').forEach((fig, idx) => {
+      const btn = fig.querySelector('a[data-open]');
+      const img = fig.querySelector('img');
+      btn && btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modalImg.src = img.src;
+        modalImg.alt = img.alt || '';
+        modalTitle.textContent = fig.dataset.title || '';
+        modalDesc.textContent = fig.dataset.desc || '';
+        modalPrice.textContent = fig.querySelector('.price')?.textContent || '';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    });
+
+    // zamknij modal przy kliknięciu poza kartę
+    modal.addEventListener('click', (ev) => {
+      if(ev.target === modal) { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+    });
+  </script>
+
+  <!--
+    === WAŻNE - instrukcje krótkie w kodzie ===
+    - ZAMIEN: example@domain.pl -> swój e‑mail (w sekcji kontakt)
+    - DODAWANIE OBRAZU: wrzuć plik do folderu "images" w repozytorium i zaktualizuj jeden z bloków <figure class="art"> (src, alt, data-title, data-desc, cena)
+    - DODAWANIE NOWEGO BLOKU: skopiuj istniejący <figure class="art"> ...</figure> i wklej tuż pod nim
+    - Jeżeli chcesz, mogę przygotować wersję z formularzem (Google Forms) osadzonym w kodzie.
+  -->
+</body>
+</html>
